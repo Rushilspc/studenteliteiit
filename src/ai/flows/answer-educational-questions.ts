@@ -109,7 +109,8 @@ export const answerEducationalQuestionsStream = ai.defineFlow(
       prompt: [
         {text: streamingPromptText.replace('{{question}}', input.question) }
       ],
-      stream: true,
+      stream: true, 
+      model: 'gemini-pro',
     });
 
     for await (const chunk of stream.text()) {
