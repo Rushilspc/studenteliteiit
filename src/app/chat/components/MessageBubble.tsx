@@ -3,6 +3,7 @@ import { ThumbsDown, ThumbsUp } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 type MessageBubbleProps = {
   message: Message;
@@ -23,6 +24,12 @@ const TypingIndicator = () => (
 
 export default function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
   const { id, text, isUser, timestamp, imageUrl, feedback, isLoading } = message;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   const time = new Date(timestamp).toLocaleTimeString([], {
     hour: '2-digit',
@@ -58,7 +65,7 @@ export default function MessageBubble({ message, onFeedback }: MessageBubbleProp
           )}
         </div>
         <div className="flex items-center mt-1.5 space-x-2">
-          <span className="text-xs text-muted-foreground">{time}</span>
+           {isClient && <span className="text-xs text-muted-foreground">{time}</span>}
           {!isUser && !isLoading && (
             <div className="flex gap-1">
               <Button
