@@ -50,25 +50,3 @@ const analyzeImageDoubtsFlow = ai.defineFlow(
     return output!;
   }
 );
-
-export const analyzeImageDoubtsStream = ai.defineFlow(
-  {
-    name: 'analyzeImageDoubtsStream',
-    inputSchema: AnalyzeImageDoubtsInputSchema,
-    outputSchema: z.object({ answer: z.string() }),
-    stream: true,
-  },
-  async function* (input) {
-    const { stream } = await ai.generate({
-      prompt: [
-        {text: `You are an expert teacher for Indian students (grades 5-12). Analyze the image and provide assistance. Keep responses between 100-300 words for better mobile readability.`},
-        {media: {url: input.photoDataUri}}
-      ],
-      stream: true,
-    });
-
-    for await (const chunk of stream.text()) {
-      yield { answer: chunk };
-    }
-  }
-);

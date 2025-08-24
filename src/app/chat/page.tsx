@@ -33,62 +33,43 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
 
     const aiResponseId = `ai-${Date.now()}`;
-    const aiResponse: Message = {
+    const aiLoadingMessage: Message = {
       id: aiResponseId,
       text: '',
       isUser: false,
       timestamp: Date.now(),
       isLoading: true,
     };
-    setMessages((prev) => [...prev, aiResponse]);
+    setMessages((prev) => [...prev, aiLoadingMessage]);
 
-    try {
-      const stream = await sendMessageAction(messageText, imageDataUri);
+    const result = await sendMessageAction(messageText, imageDataUri);
 
-      let accumulatedText = '';
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiResponseId ? { ...msg, isLoading: false } : msg
-        )
-      );
-
-      for await (const chunk of stream) {
-        if (chunk.answer) {
-          accumulatedText += chunk.answer;
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === aiResponseId ? { ...msg, text: accumulatedText } : msg
-            )
-          );
-        } else if(chunk.error) {
-           setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === aiResponseId ? { ...msg, text: chunk.error } : msg
-            )
-          );
-           toast({
-            variant: "destructive",
-            title: "An error occurred",
-            description: chunk.error,
-          });
-          break;
-        }
-      }
-    } catch (e) {
-      const errorText = 'Our AI is facing some issues. Please try again later.';
-       setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === aiResponseId ? { ...msg, isLoading: false, text: errorText } : msg
-        )
-      );
+    let aiResponseMessage: Message;
+    if (result.error) {
+       aiResponseMessage = {
+        id: aiResponseId,
+        text: result.error,
+        isUser: false,
+        timestamp: Date.now(),
+        isLoading: false,
+      };
       toast({
         variant: "destructive",
         title: "An error occurred",
-        description: errorText,
+        description: result.error,
       });
-    } finally {
-      setIsPending(false);
+    } else {
+       aiResponseMessage = {
+        id: aiResponseId,
+        text: result.answer!,
+        isUser: false,
+        timestamp: Date.now(),
+        isLoading: false,
+      };
     }
+    
+    setMessages(prev => prev.map(msg => msg.id === aiResponseId ? aiResponseMessage : msg));
+    setIsPending(false);
   };
 
   const handleFeedback = (messageId: string, feedback: 'positive' | 'negative') => {
