@@ -65,9 +65,6 @@ export default function ChatInput({ onSendMessage, isSending }: ChatInputProps) 
         )}
       <div className="flex items-end gap-2">
         <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-        <Button variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
-            <Camera className="h-6 w-6" />
-        </Button>
         <Textarea
           ref={textareaRef}
           value={message}
@@ -78,6 +75,9 @@ export default function ChatInput({ onSendMessage, isSending }: ChatInputProps) 
           rows={1}
           disabled={isSending}
         />
+        <Button variant="ghost" size="icon" className="shrink-0" onClick={() => fileInputRef.current?.click()}>
+            <Camera className="h-6 w-6" />
+        </Button>
         <Button 
             className="shrink-0 h-11 w-11 bg-gradient-to-r from-primary to-purple-500 text-white rounded-full disabled:opacity-70" 
             onClick={handleSend}
