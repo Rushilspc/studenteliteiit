@@ -16,7 +16,7 @@ export default function ChatArea({ messages, onFeedback }: ChatAreaProps) {
   useEffect(() => {
     if (scrollViewportRef.current) {
       scrollViewportRef.current.scrollTo({
-        top: scrollViewportdRef.current.scrollHeight,
+        top: scrollViewportRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
