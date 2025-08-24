@@ -31,7 +31,7 @@ export async function analyzeImageDoubts(input: AnalyzeImageDoubtsInput): Promis
 const analyzeImageDoubtsPrompt = ai.definePrompt({
   name: 'analyzeImageDoubtsPrompt',
   input: {schema: AnalyzeImageDoubtsInputSchema},
-  output: {schema: AnalyzeImageDoubtsOutputSchema},
+  output: {schema: z.object({ response: z.string() })},
   prompt: `You are an expert teacher for Indian students (grades 5-12). Analyze the image and provide assistance.
 
 Image: {{media url=photoDataUri}}
@@ -58,12 +58,13 @@ export const analyzeImageDoubtsStream = ai.defineFlow(
     outputSchema: z.object({ answer: z.string() }),
     stream: true,
   },
-  async (input) => {
+  async function* (input) {
     const { stream } = await ai.generate({
-      prompt: {
-        ...analyzeImageDoubtsPrompt,
-        input: input,
-      },
+      prompt: `You are an expert teacher for Indian students (grades 5-12). Analyze the image and provide assistance.
+
+Image: {{media url=${input.photoDataUri}}}
+
+Keep responses between 100-300 words for better mobile readability.`,
       stream: true,
     });
 
