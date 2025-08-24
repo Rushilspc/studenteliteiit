@@ -50,3 +50,25 @@ const analyzeImageDoubtsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export const analyzeImageDoubtsStream = ai.defineFlow(
+  {
+    name: 'analyzeImageDoubtsStream',
+    inputSchema: AnalyzeImageDoubtsInputSchema,
+    outputSchema: z.object({ answer: z.string() }),
+    stream: true,
+  },
+  async (input) => {
+    const { stream } = await ai.generate({
+      prompt: {
+        ...analyzeImageDoubtsPrompt,
+        input: input,
+      },
+      stream: true,
+    });
+
+    for await (const chunk of stream.text()) {
+      yield { answer: chunk };
+    }
+  }
+);

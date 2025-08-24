@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useTransition } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ChatHeader from './components/ChatHeader';
 import ChatArea from './components/ChatArea';
 import ChatInput from './components/ChatInput';
@@ -17,10 +17,10 @@ export default function ChatPage() {
       timestamp: Date.now(),
     },
   ]);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const { toast } = useToast();
 
-  const handleSendMessage = (messageText: string, imageDataUri?: string) => {
+  const handleSendMessage = async (messageText: string, imageDataUri?: string) => {
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       text: messageText,
@@ -28,43 +28,67 @@ export default function ChatPage() {
       timestamp: Date.now(),
       imageUrl: imageDataUri,
     };
+    
+    setIsPending(true);
+    setMessages((prev) => [...prev, userMessage]);
 
-    const loadingMessage: Message = {
-      id: `ai-loading-${Date.now()}`,
+    const aiResponseId = `ai-${Date.now()}`;
+    const aiResponse: Message = {
+      id: aiResponseId,
       text: '',
       isUser: false,
       timestamp: Date.now(),
       isLoading: true,
-    }
+    };
+    setMessages((prev) => [...prev, aiResponse]);
 
-    setMessages((prev) => [...prev, userMessage, loadingMessage]);
+    try {
+      const stream = await sendMessageAction(messageText, imageDataUri);
 
-    startTransition(async () => {
-      const result = await sendMessageAction(messageText, imageDataUri);
-      
-      const aiResponse: Message = {
-        id: `ai-${Date.now()}`,
-        text: "Oops! Something went wrong. Please try again.",
-        isUser: false,
-        timestamp: Date.now(),
-      };
+      let accumulatedText = '';
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiResponseId ? { ...msg, isLoading: false } : msg
+        )
+      );
 
-      if (result.answer) {
-        aiResponse.text = result.answer;
-      } else if(result.error) {
-        aiResponse.text = result.error;
-        toast({
-          variant: "destructive",
-          title: "An error occurred",
-          description: result.error,
-        });
+      for await (const chunk of stream) {
+        if (chunk.answer) {
+          accumulatedText += chunk.answer;
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiResponseId ? { ...msg, text: accumulatedText } : msg
+            )
+          );
+        } else if(chunk.error) {
+           setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiResponseId ? { ...msg, text: chunk.error } : msg
+            )
+          );
+           toast({
+            variant: "destructive",
+            title: "An error occurred",
+            description: chunk.error,
+          });
+          break;
+        }
       }
-
-      setMessages((prev) => {
-        const newMessages = prev.filter(msg => !msg.isLoading);
-        return [...newMessages, aiResponse];
+    } catch (e) {
+      const errorText = 'Our AI is facing some issues. Please try again later.';
+       setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === aiResponseId ? { ...msg, isLoading: false, text: errorText } : msg
+        )
+      );
+      toast({
+        variant: "destructive",
+        title: "An error occurred",
+        description: errorText,
       });
-    });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const handleFeedback = (messageId: string, feedback: 'positive' | 'negative') => {

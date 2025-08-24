@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { streamFlow } from '@genkit-ai/next/server';
 
 const AnswerEducationalQuestionsInputSchema = z.object({
   question: z.string().describe('The educational question to be answered.'),
@@ -24,6 +25,7 @@ export type AnswerEducationalQuestionsOutput = z.infer<typeof AnswerEducationalQ
 export async function answerEducationalQuestions(input: AnswerEducationalQuestionsInput): Promise<AnswerEducationalQuestionsOutput> {
   return answerEducationalQuestionsFlow(input);
 }
+
 
 const prompt = ai.definePrompt({
   name: 'answerEducationalQuestionsPrompt',
@@ -66,5 +68,28 @@ const answerEducationalQuestionsFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt(input);
     return output!;
+  }
+);
+
+
+export const answerEducationalQuestionsStream = ai.defineFlow(
+  {
+    name: 'answerEducationalQuestionsStream',
+    inputSchema: AnswerEducationalQuestionsInputSchema,
+    outputSchema: z.object({ answer: z.string() }),
+    stream: true,
+  },
+  async (input) => {
+    const { stream } = await ai.generate({
+      prompt: {
+        ...prompt,
+        input: input,
+      },
+      stream: true,
+    });
+
+    for await (const chunk of stream.text()) {
+      yield { answer: chunk };
+    }
   }
 );
