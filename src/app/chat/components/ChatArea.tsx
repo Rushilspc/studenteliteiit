@@ -11,19 +11,19 @@ type ChatAreaProps = {
 };
 
 export default function ChatArea({ messages, onFeedback }: ChatAreaProps) {
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
+    if (scrollViewportRef.current) {
+      scrollViewportRef.current.scrollTo({
+        top: scrollViewportdRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
   }, [messages]);
   
   return (
-    <ScrollArea className="flex-1" viewportRef={scrollAreaRef}>
+    <ScrollArea className="flex-1" viewportRef={scrollViewportRef}>
       <div className="p-4 space-y-4">
         {messages.map((message) => (
           <MessageBubble key={message.id} message={message} onFeedback={onFeedback} />
