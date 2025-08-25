@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import ChatHeader from './components/ChatHeader';
 import ChatArea from './components/ChatArea';
 import ChatInput from './components/ChatInput';
@@ -86,10 +86,12 @@ export default function ChatPage() {
 
 
   return (
-    <div className="flex flex-col h-screen max-h-screen w-full max-w-md mx-auto bg-white dark:bg-card">
-      <ChatHeader />
-      <ChatArea messages={messages} onFeedback={handleFeedback} />
-      <ChatInput onSendMessage={handleSendMessage} isSending={isPending} />
+     <div className="flex justify-center w-full h-screen bg-muted/40">
+      <div className="flex flex-col h-full max-h-screen w-full md:max-w-3xl lg:max-w-4xl bg-white dark:bg-card border-x">
+        <ChatHeader />
+        <ChatArea messages={messages} onFeedback={handleFeedback} />
+        <ChatInput onSendMessage={handleSendMessage} isSending={isPending} />
+      </div>
     </div>
   );
 }
