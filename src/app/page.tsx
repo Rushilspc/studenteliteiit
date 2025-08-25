@@ -37,7 +37,7 @@ export default function LoginPage() {
   return (
     <div className="relative min-h-screen w-full bg-background overflow-hidden">
       <div className="absolute top-4 left-4 z-20 flex items-center gap-4">
-        <Image src="/logo.png" alt="Elite IIT Logo" width={200} height={40} />
+        <Image src="https://eliteiit.com/wp-content/uploads/2023/11/logoelite-e1711632433815.png" alt="Elite IIT Logo" width={200} height={40} />
       </div>
        <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
         <Link href="/admin">
