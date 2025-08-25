@@ -13,7 +13,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
-      text: "Hello! I'm Usha Ma'am, your AI Guru. How can I help you with Physics, Chemistry, Math, or Biology today? Ask a question or upload an image of your doubt. 📚✨",
+      text: "Hello! I'm Usha Ma'am, your Mentor at EliteIIT. How can I help you with Physics, Chemistry, Math, or Biology today? Ask a question or upload an image of your doubt. 📚✨",
       isUser: false,
       timestamp: Date.now(),
     },
