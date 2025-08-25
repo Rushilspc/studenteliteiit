@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -35,13 +36,16 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-background overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10"></div>
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-4">
+        <Image src="/logo.png" alt="Elite IIT Logo" width={200} height={40} />
         <Link href="/admin">
-          <Button variant="ghost" className="absolute top-4 right-4">
+          <Button variant="ghost">
             Admin
           </Button>
         </Link>
+      </div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10"></div>
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4">
         <Card className="w-full max-w-sm shadow-2xl bg-card/80 backdrop-blur-sm">
           <CardHeader className="text-center space-y-4">
             <Logo />
