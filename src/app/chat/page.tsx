@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -87,7 +88,7 @@ export default function ChatPage() {
 
   return (
      <div className="flex justify-center w-full h-screen bg-muted/40">
-      <div className="flex flex-col h-full max-h-screen w-full md:max-w-3xl lg:max-w-4xl bg-white dark:bg-card border-x">
+      <div className="flex flex-col h-full max-h-screen w-full bg-white dark:bg-card md:border-x">
         <ChatHeader />
         <ChatArea messages={messages} onFeedback={handleFeedback} />
         <ChatInput onSendMessage={handleSendMessage} isSending={isPending} />
